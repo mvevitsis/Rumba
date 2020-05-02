@@ -79,7 +79,9 @@ preferences {
         input "roomba_password", "password", title: "Roomba password", displayDuringSetup: true
     }
     section("Misc.") {
-       	input "sendPushMessage", "enum", title: "Send a push notification if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
+       	input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
+        //input "sendAudioMessage", "enum", title: "Audio Notifications", options: ["Yes", "No"], defaultValue: "No", required: true
+        //input "audioDevices", "capability.audioNotification", title: "Select a speaker", required: false, multiple: true
 		input type: "paragraph", title: "Polling Interval [minutes]", description: "This feature allows you to change the frequency of polling for the robot in minutes (1-59)"
         input "pollInterval", "number", title: "Polling Interval", description: "Change polling frequency (in minutes)", defaultValue:4, range: "1..59", required: true, displayDuringSetup: true
     }
@@ -90,12 +92,12 @@ tiles {
         tileAttribute("device.status", key: "PRIMARY_CONTROL") {
             attributeState "error", label: 'Error', icon: "st.switches.switch.off", backgroundColor: "#bc2323"
             attributeState "bin-full", label: 'Bin Full', icon: "st.switches.switch.off", backgroundColor: "#bc2323"
-            attributeState "docked", label: 'Start Clean', action: "switch.on", icon: "st.switches.switch.off", backgroundColor: "#ffffff", nextState: "starting"
+            attributeState "docked", label: 'Start Clean', action: "setRobotCleanerMovement(cleaning)", icon: "st.switches.switch.off", backgroundColor: "#ffffff", nextState: "starting"
             attributeState "docking", label: 'Docking', icon: "st.switches.switch.off", backgroundColor: "#ffa81e"
             attributeState "starting", label: 'Starting Clean', icon: "st.switches.switch.off", backgroundColor: "#ffffff"
             attributeState "cleaning", label: 'Stop Clean', action: "stop", icon: "st.switches.switch.on", backgroundColor: "#79b821", nextState: "pausing"
             attributeState "pausing", label: 'Stop Clean', icon: "st.switches.switch.on", backgroundColor: "#79b821"
-            attributeState "paused", label: 'Send Home', action: "switch.off", icon: "st.switches.switch.on", backgroundColor: "#79b821", nextState: "docking"
+            attributeState "paused", label: 'Send Home', action: "setRobotCleanerMovement(charging)", icon: "st.switches.switch.on", backgroundColor: "#79b821", nextState: "docking"
             attributeState "resuming", label: 'Stop Clean', icon: "st.switches.switch.on", backgroundColor: "#79b821"
         }
         tileAttribute("device.headline", key: "SECONDARY_CONTROL") {
@@ -127,8 +129,8 @@ tiles {
         state "docking", label: 'Resume', backgroundColor: "#ffffff"
         state "starting", label: 'Resume', backgroundColor: "#ffffff"
         state "cleaning", label: 'Resume', backgroundColor: "#ffffff"
-        state "pausing", label: 'Resume', backgroundColor: "#79b821", nextState: "resuming", action: "switch.on"
-        state "paused", label: 'Resume', backgroundColor: "#ffffff", nextState: "resuming", action: "switch.on"
+        state "pausing", label: 'Resume', backgroundColor: "#79b821", nextState: "resuming", action: "setRobotCleanerMovement(cleaning)"
+        state "paused", label: 'Resume', backgroundColor: "#ffffff", nextState: "resuming", action: "setRobotCleanerMovement(cleaning)"
         state "bin-full", label: 'Bin full', backgroundColor: "#bc2323"
         state "resuming", label: 'Resuming..', backgroundColor: "#79b821"
     }
@@ -238,63 +240,110 @@ def poll() {
 	return localAPI ? local_poll() : apiGet()
 }
 
-def setAlarm(){
-	if(roomba_value == "bin-full"){
-    setRobotCleanerMovement(alarm)
-	}
-    if(roomba_value == "error"){
-	setRobotCleanerMovement(alarm)
-    }
-}
-
-def sendMsg(){
-	String msg = "Roomba has encoutered a problem"
+def sendMsg(message){
+	def msg = message
     if(sendPushMessage == "Yes") {
      	sendPush(msg)
   	}
+    //Non functioning, removed from prefernces
+    if(sendAudioMessage == "Yes"){
+     	if(audioDevices){
+  		audioDevices?.each { audioDevice -> 
+       	if (audioDevice.hasCommand("playText")) { //Check if speaker supports TTS 
+             audioDevice.playText(msg)
+        } else {
+        if (audioDevice.hasCommand("speak")) { //Check if speaker supports speech synthesis  
+       		 audioDevice.speak(msg.toString())
+        } else {
+             audioDevice.playTrack(textToSpeech(msg)?.uri) //All other speakers
+        }
+        } 
+  
+        }
+        }
+    }
+    
+}
+
+//robotCleanerCleaningMode methods
+def setRobotCleanerCleaningMode(mode){
+	if(mode == 'auto'){
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
+    }
+    if(mode == 'part'){
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
+    }
+    if(mode == 'repeat'){
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
+    }
+    if(mode == 'manual'){
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
+    }
+    if(mode == 'stop'){
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
+    }
+    //if(mode == 'map'){
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'map')
+    //}
+}
+                         
+//robotCleanerTurboMode methods
+def setRobotCleanerTurboMode(mode){
+	if(mode == 'on'){
+    //For debug only
+    //sendEvent(name: 'robotCleanerTurboMode', value: 'on')
+    }
+    if(mode == 'off'){
+    //For debug only
+    //sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+    }
+    if(mode == 'silence'){
+    //For debug only
+    //sendEvent(name: 'robotCleanerTurboMode', value: 'silence')
+    }
 }
     
 //robotCleanerMovement methods
 def setRobotCleanerMovement(mode){
 	def status = device.latestValue("status")
-	if(mode == 'homing'){
+	if(mode == 'homing'){d
+    	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'homing')
     }
 	if(mode == 'idle'){
+    	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'idle')
         return pause()
     }
     if(mode == 'charging'){
+    	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'charging' )
-        if(status == "paused") {
-    		return dock()
-    	} else {
-	    	return pauseAndDock()
-    	}
+        return off()
     }
     if(mode == 'alarm'){
+    	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'alarm' )
-        sendMsg()
     }
     if(mode == 'powerOff'){
+    	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'powerOff' )
     }
     if(mode == 'reserve'){
+    	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'reserve')
     }
     if(mode == 'point'){
+    	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'point')
     }
 	if(mode == 'after'){
+    	//For debug only
         sendEvent(name: 'robotCleanerMovement', value: 'after')
     }
     if(mode == 'cleaning'){
+    	//For debug only
 	    sendEvent(name: 'robotCleanerMovement', value: 'cleaning')
-        if(status == "paused") {
-	    	return resume()
-    	} else {
-	    	return start()
-	    }  
+        return on()
     }
 }
 
@@ -303,7 +352,8 @@ def on() {
     // Always start roomba
     def status = device.latestValue("status")
     log.debug "On based on state - ${status}"
-    sendEvent(name: 'switch', value: 'on')
+    //For debug only
+    //sendEvent(name: 'switch', value: 'on') 
 	if(status == "paused") {
 	    return resume()
     } else {
@@ -314,7 +364,8 @@ def off() {
     // Always return to dock..
 	def status = device.latestValue("status")
     log.debug "Off based on state - ${status}"
-    sendEvent(name: 'switch', value: 'off')
+    //For debug only
+    //sendEvent(name: 'switch', value: 'off') 
     if(status == "paused") {
     	return dock()
     } else {
@@ -336,7 +387,8 @@ def stop() {
 }
 def pauseAndDock() {
     sendEvent(name: "status", value: "pausing")
-    state.RoombaCmd = "pause"
+    //sendEvent(name: 'robotCleanerMovement', value: 'homing')
+	state.RoombaCmd = "pause"
     return localAPI ? local_pauseAndDock() : apiGet()
 }
 def pause() {
@@ -352,7 +404,8 @@ def cancel() {
 // Actions
 def dock() {
     sendEvent(name: "status", value: "docking")
-    state.RoombaCmd = "dock"
+    //sendEvent(name: 'robotCleanerMovement', value: 'homing')
+	state.RoombaCmd = "dock"
     runIn(15, poll)
 	return localAPI ? local_dock() : apiGet()
 }
@@ -513,10 +566,16 @@ def setStatus(data) {
     	state.robotCleanerMovement = "cleaning"
     } else if(roomba_value == "paused"){
     	state.robotCleanerMovement = "idle"
-    } else if (roomba_value == "docked" || roomba_value == "docking") {
+    } else if (roomba_value == "docked"){
        state.robotCleanerMovement = "charging"
+    } else if (roomba_value == "docking"){
+	   state.robotCleanerMovement = "homing"
+    } else if (roomba_value == "error"){
+       state.robotCleanerMovement = "alarm"
+    } else if (roomba_value == "bin-full"){
+       state.robotCleanerMovement = "reserve"
     }
-
+    
 	//Set the state object
     if(roomba_value == "cleaning") {
         state.switch = "on"
@@ -607,16 +666,22 @@ def parse_not_ready_status(readyCode) {
 
     if(readyCode == ROOMBA_STATES['full']) {
       return "${robotName}'s bin is full. Empty bin to continue."
+      sendMsg("${robotName}'s bin is full. Empty bin to continue.")
     } else if(readyCode == ROOMBA_STATES['tilted']) {
       return "${robotName} is not upright. Place robot on flat surface to continue."
+      sendMsg("${robotName} is not upright. Place robot on flat surface to continue.")
     } else if (readyCode == ROOMBA_STATES['stuck']) {
       return "${robotName} is stuck. Move robot to continue."
+      sendMsg("${robotName} is stuck. Move robot to continue.")
     } else if (readyCode == ROOMBA_STATES['batterylow']) {
       return "${robotName}'s battery is low. Please send Roomba to dock or place on dock."
+      sendMsg("${robotName}'s battery is low. Please send Roomba to dock or place on dock.")
     } else if (readyCode == ROOMBA_STATES['debrisextractors']) {
       return "${robotName}'s debris extractors are blocked. Please clear them."
+      sendMsg("${robotName}'s debris extractors are blocked. Please clear them.")
     } else {
       return "${robotName} returned notReady=${readyCode}. See iRobot app for details."
+      sendMsg("${robotName} returned notReady=${readyCode}. See iRobot app for details.")
     }
 }
 
@@ -700,12 +765,18 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     def roomba_value = get_robot_enum(current_phase, readyCode)
     log.debug("Robot updates -- 2 ${roomba_value} + ${new_status}")
     //Set robotCleanerMovement state
-    if(roomba_value == "cleaning"){
+  	 if(roomba_value == "cleaning"){
     	state.robotCleanerMovement = "cleaning"
     } else if(roomba_value == "paused"){
     	state.robotCleanerMovement = "idle"
-    } else if (roomba_value == "docked" || roomba_value == "docking") {
+    } else if (roomba_value == "docked"){
        state.robotCleanerMovement = "charging"
+    } else if (roomba_value == "docking"){
+	   state.robotCleanerMovement = "homing"
+    } else if (roomba_value == "error"){
+       state.robotCleanerMovement = "alarm"
+    } else if (roomba_value == "bin-full") {
+       state.robotCleanerMovement = "reserve"
     }
     
     //Set the state object
