@@ -35,7 +35,7 @@ metadata {
         //capability "robotCleanerCleaningMode"
         //capability "robotCleanerTurboMode"
         capability "Battery"
-        //capability "Switch"
+        capability "Switch"
         capability "Refresh"
         capability "Polling"
         capability "Consumable"
@@ -79,7 +79,7 @@ preferences {
         input "roomba_password", "password", title: "Roomba password", displayDuringSetup: true
     }
     section("Misc.") {
-       	input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
+       	//input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "sendAudioMessage", "enum", title: "Audio Notifications", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "audioDevices", "capability.audioNotification", title: "Select a speaker", required: false, multiple: true
 		input type: "paragraph", title: "Polling Interval [minutes]", description: "This feature allows you to change the frequency of polling for the robot in minutes (1-59)"
@@ -92,12 +92,12 @@ tiles {
         tileAttribute("device.status", key: "PRIMARY_CONTROL") {
             attributeState "error", label: 'Error', icon: "st.switches.switch.off", backgroundColor: "#bc2323"
             attributeState "bin-full", label: 'Bin Full', icon: "st.switches.switch.off", backgroundColor: "#bc2323"
-            attributeState "docked", label: 'Start Clean', action: "setRobotCleanerMovement(cleaning)", icon: "st.switches.switch.off", backgroundColor: "#ffffff", nextState: "starting"
+            attributeState "docked", label: 'Start Clean', action: "switch.on", icon: "st.switches.switch.off", backgroundColor: "#ffffff", nextState: "starting"
             attributeState "docking", label: 'Docking', icon: "st.switches.switch.off", backgroundColor: "#ffa81e"
             attributeState "starting", label: 'Starting Clean', icon: "st.switches.switch.off", backgroundColor: "#ffffff"
             attributeState "cleaning", label: 'Stop Clean', action: "stop", icon: "st.switches.switch.on", backgroundColor: "#79b821", nextState: "pausing"
             attributeState "pausing", label: 'Stop Clean', icon: "st.switches.switch.on", backgroundColor: "#79b821"
-            attributeState "paused", label: 'Send Home', action: "setRobotCleanerMovement(charging)", icon: "st.switches.switch.on", backgroundColor: "#79b821", nextState: "docking"
+            attributeState "paused", label: 'Send Home', action: "switch.off", icon: "st.switches.switch.on", backgroundColor: "#79b821", nextState: "docking"
             attributeState "resuming", label: 'Stop Clean', icon: "st.switches.switch.on", backgroundColor: "#79b821"
         }
         tileAttribute("device.headline", key: "SECONDARY_CONTROL") {
@@ -129,8 +129,8 @@ tiles {
         state "docking", label: 'Resume', backgroundColor: "#ffffff"
         state "starting", label: 'Resume', backgroundColor: "#ffffff"
         state "cleaning", label: 'Resume', backgroundColor: "#ffffff"
-        state "pausing", label: 'Resume', backgroundColor: "#79b821", nextState: "resuming", action: "setRobotCleanerMovement(cleaning)"
-        state "paused", label: 'Resume', backgroundColor: "#ffffff", nextState: "resuming", action: "setRobotCleanerMovement(cleaning)"
+        state "pausing", label: 'Resume', backgroundColor: "#79b821", nextState: "resuming", action: "switch.on"
+        state "paused", label: 'Resume', backgroundColor: "#ffffff", nextState: "resuming", action: "switch.on"
         state "bin-full", label: 'Bin full', backgroundColor: "#bc2323"
         state "resuming", label: 'Resuming..', backgroundColor: "#79b821"
     }
@@ -268,23 +268,25 @@ def sendMsg(message){
 //robotCleanerCleaningMode methods
 def setRobotCleanerCleaningMode(mode){
 	if(mode == 'auto'){
+    //For debug only
     //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
     }
     if(mode == 'part'){
+    //For debug only
     //sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
     }
     if(mode == 'repeat'){
+    //For debug only
     //sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
     }
     if(mode == 'manual'){
+    //For debug only
     //sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
     }
     if(mode == 'stop'){
+    //For debug only
     //sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
     }
-    //if(mode == 'map'){
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'map')
-    //}
 }
                          
 //robotCleanerTurboMode methods
@@ -306,7 +308,7 @@ def setRobotCleanerTurboMode(mode){
 //robotCleanerMovement methods
 def setRobotCleanerMovement(mode){
 	def status = device.latestValue("status")
-	if(mode == 'homing'){d
+	if(mode == 'homing'){
     	//For debug only
     	sendEvent(name: 'robotCleanerMovement', value: 'homing')
     }
@@ -353,7 +355,7 @@ def on() {
     def status = device.latestValue("status")
     log.debug "On based on state - ${status}"
     //For debug only
-    //sendEvent(name: 'switch', value: 'on') 
+    sendEvent(name: 'switch', value: 'on') 
 	if(status == "paused") {
 	    return resume()
     } else {
@@ -365,7 +367,7 @@ def off() {
 	def status = device.latestValue("status")
     log.debug "Off based on state - ${status}"
     //For debug only
-    //sendEvent(name: 'switch', value: 'off') 
+    sendEvent(name: 'switch', value: 'off') 
     if(status == "paused") {
     	return dock()
     } else {
