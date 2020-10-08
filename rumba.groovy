@@ -32,8 +32,8 @@ def getRoombaStates() {
 metadata {
     definition (name: "Rumba", namespace: "mvevitsis", author: "Matvei Vevitsis", ocfDeviceType: "oic.d.robotcleaner") {
         capability "robotCleanerMovement"
-        //capability "robotCleanerCleaningMode"
-        //capability "robotCleanerTurboMode"
+        capability "robotCleanerCleaningMode"
+        capability "robotCleanerTurboMode"
         capability "Battery"
         capability "Switch"
         capability "Refresh"
@@ -193,8 +193,9 @@ def configure() {
 //Initialize capabilities for new app UI display
 def initialize() {
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
-//sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
-//sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+sendEvent(name: 'switch', value: 'off')
+sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
+sendEvent(name: 'robotCleanerTurboMode', value: 'off')
 }
 
 //Timed Session
@@ -221,7 +222,8 @@ def setConsumableStatus(statusString) {
 //Refresh
 def refresh() {
     log.debug "Executing 'refresh'"
-    return poll
+    //return poll
+    return poll()
 }
 //Polling
 def pollHistory() {
@@ -265,27 +267,34 @@ def sendMsg(message){
     
 }
 
+//TODO add custom capability from cli
+//def edgeClean(mode){
+//}
+
 //robotCleanerCleaningMode methods
 def setRobotCleanerCleaningMode(mode){
 	if(mode == 'auto'){
     //For debug only
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
+    //TODO Set CleaningPasses 'Auto'
     }
     if(mode == 'part'){
     //For debug only
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
     }
     if(mode == 'repeat'){
     //For debug only
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
+    //TODO Set CleaningPasses 'Two'
     }
     if(mode == 'manual'){
     //For debug only
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
+    //TODO Set CleaningPasses 'One'
     }
     if(mode == 'stop'){
     //For debug only
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
     }
 }
                          
@@ -293,15 +302,18 @@ def setRobotCleanerCleaningMode(mode){
 def setRobotCleanerTurboMode(mode){
 	if(mode == 'on'){
     //For debug only
-    //sendEvent(name: 'robotCleanerTurboMode', value: 'on')
+    sendEvent(name: 'robotCleanerTurboMode', value: 'on')
+    //TODO Set CarpetBoost 'Performance'
     }
     if(mode == 'off'){
     //For debug only
-    //sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+    sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+    //TODO Set CarpetBoost 'Auto'
     }
     if(mode == 'silence'){
     //For debug only
-    //sendEvent(name: 'robotCleanerTurboMode', value: 'silence')
+    sendEvent(name: 'robotCleanerTurboMode', value: 'silence')
+    //TODO Set CarpetBoost 'Eco'
     }
 }
     
@@ -356,7 +368,8 @@ def on() {
     log.debug "On based on state - ${status}"
     //For debug only
     sendEvent(name: 'switch', value: 'on') 
-	if(status == "paused") {
+    //if(status == "paused")
+	if(status == "pausing") {
 	    return resume()
     } else {
 	    return start()
@@ -368,7 +381,7 @@ def off() {
     log.debug "Off based on state - ${status}"
     //For debug only
     sendEvent(name: 'switch', value: 'off') 
-    if(status == "paused") {
+	if(status == "paused") {
     	return dock()
     } else {
 	    return pauseAndDock()
@@ -761,6 +774,9 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     def num_cleaning_jobs = mission.nMssn
     def num_dirt_detected = data.bbrun.nScrubs
     def total_job_time = data.bbrun.hr
+    //TODO def cleaning_pass = ???
+    //TODO def carpet_boost = ???
+    //TODO def edge_clean = ???
     
 
     def new_status = get_robot_status(current_phase, current_cycle, current_charge, readyCode)
@@ -781,6 +797,18 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
        state.robotCleanerMovement = "reserve"
     }
     
+    //TODO Set robotCleanerCleaningMode state
+    //if(cleaning_pass == "???"){
+    //}
+    
+    //TODO Set 'robotCleanerTurboMode' state
+    //if(cleaning_pass == "???"){
+    //}
+    
+    //TODO Set 'edgeClean' state
+    //if(edge_clean == '???){
+    //}
+  
     //Set the state object
     if(roomba_value == "cleaning") {
         state.switch = "on"
@@ -835,9 +863,25 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable)    
     sendEvent(name: 'robotCleanerMovement', value: robotCleanerMovement)
+    //TODO sendEvent(name: 'robotCleanerCleaningMode', value: '???')
+    //TODO sendEvent(name: 'robotCleanerTurboMode', value: '???')
+    //TODO sendEvent(name: 'edgeClean', value '???)
 
+
+
+ 
 
 }
+//TODO private local_onepass
+//TODO private local_twopass
+//TODO private local_auto
+
+//TODO private local_auto
+//TODO private local_eco
+//TODO private local_performance
+
+//TODO private local_edgeClean_on
+//TODO private locaol_edgeClean_off
 
 private local_poll() {
 	local_get('/api/local/config/preferences', 'local_poll_cbk')
