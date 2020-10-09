@@ -4,7 +4,7 @@
     "name": "Always Finish",
     "status": "proposed",
     "attributes": {
-        "edgeClean": {
+        "alwaysFinish": {
             "schema": {
                 "type": "object",
                 "additionalProperties": false,
