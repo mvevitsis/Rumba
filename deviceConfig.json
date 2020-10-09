@@ -1,0 +1,160 @@
+{
+    "type": "dth",
+    "iconUrl": null,
+    "dashboard": {
+        "states": [
+            {
+                "component": "main",
+                "capability": "switch",
+                "version": 1,
+                "values": [],
+                "patch": [],
+                "visibleCondition": null
+            }
+                   ],
+        "actions": [
+            {
+                "component": "main",
+                "capability": "switch",
+                "version": 1,
+                "values": [],
+                "patch": [],
+                "visibleCondition": null
+            }
+                    ]
+    },
+    "detailView": [
+        {
+            "component": "main",
+            "capability": "switch",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "robotCleanerMovement",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "circlefield05082.cleaningPasses",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "robotCleanerTurboMode",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "battery",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "refresh",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        }
+     
+    ],
+    "automation": {
+        "conditions": [
+             {
+            "component": "main",
+            "capability": "switch",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "robotCleanerMovement",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "circlefield05082.cleaningPasses",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "robotCleanerTurboMode",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "battery",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        }
+        ],
+        "actions": [
+            {
+            "component": "main",
+            "capability": "switch",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "robotCleanerMovement",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "circlefield05082.cleaningPasses",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "robotCleanerTurboMode",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        }
+      
+        ]
+    },
+    "presentationId": "88efb264-6898-3bfd-a423-f299db1bc13c",
+    "manufacturerName": "SmartThingsCommunity",
+    "vid": "88efb264-6898-3bfd-a423-f299db1bc13c",
+    "mnmn": "SmartThingsCommunity"
+}
