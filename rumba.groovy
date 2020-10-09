@@ -30,9 +30,13 @@ def getRoombaStates() {
     return ROOMBA_STATES
 }
 metadata {
-    definition (name: "Rumba", namespace: "mvevitsis", author: "Matvei Vevitsis", ocfDeviceType: "oic.d.robotcleaner") {
+    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", "vid": "171a7899-0d26-39e3-a640-9a040755ea07",
+    "mnmn": "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner") {
         capability "robotCleanerMovement"
-        capability "robotCleanerCleaningMode"
+        //capability "robotCleanerCleaningMode"
+        capability "circlefield05082.cleaningPasses"
+        capability "circlefield05082.edgeClean"
+        capability "circlefield05082.alwaysFinish"
         capability "robotCleanerTurboMode"
         capability "Battery"
         capability "Switch"
@@ -194,8 +198,11 @@ def configure() {
 def initialize() {
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 sendEvent(name: 'switch', value: 'off')
-sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
+//sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
 sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+sendEvent(name: 'cleaningPasses', value: 'auto')
+sendEvent(name: 'edgeClean', value: 'on')
+sendEvent(name: 'alwaysFinish', value: 'off')
 }
 
 //Timed Session
@@ -267,16 +274,17 @@ def sendMsg(message){
     
 }
 
-//TODO add custom capability from cli
-//def edgeClean(mode){
-//}
+//TODO
+// def setEdgeClean methods
+// def setCleaningPasses methods
+// def setAlwaysFinish methods
+
 
 //robotCleanerCleaningMode methods
 def setRobotCleanerCleaningMode(mode){
 	if(mode == 'auto'){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
-    //TODO Set CleaningPasses 'Auto'
     }
     if(mode == 'part'){
     //For debug only
@@ -285,12 +293,10 @@ def setRobotCleanerCleaningMode(mode){
     if(mode == 'repeat'){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
-    //TODO Set CleaningPasses 'Two'
     }
     if(mode == 'manual'){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
-    //TODO Set CleaningPasses 'One'
     }
     if(mode == 'stop'){
     //For debug only
@@ -777,6 +783,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     //TODO def cleaning_pass = ???
     //TODO def carpet_boost = ???
     //TODO def edge_clean = ???
+    //TODO def always_finish = ???
     
 
     def new_status = get_robot_status(current_phase, current_cycle, current_charge, readyCode)
@@ -797,17 +804,13 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
        state.robotCleanerMovement = "reserve"
     }
     
-    //TODO Set robotCleanerCleaningMode state
-    //if(cleaning_pass == "???"){
-    //}
+    //TODO Set robotCleanerTurboMode state
+     
+    //TODO Set cleaningPasses state
     
-    //TODO Set 'robotCleanerTurboMode' state
-    //if(cleaning_pass == "???"){
-    //}
+    //TODO Set edgeClean state
     
-    //TODO Set 'edgeClean' state
-    //if(edge_clean == '???){
-    //}
+    //TODO Set alwaysFinish state
   
     //Set the state object
     if(roomba_value == "cleaning") {
@@ -863,9 +866,10 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable)    
     sendEvent(name: 'robotCleanerMovement', value: robotCleanerMovement)
-    //TODO sendEvent(name: 'robotCleanerCleaningMode', value: '???')
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: '???')
-    //TODO sendEvent(name: 'edgeClean', value '???)
+    //TODO sendEvent(name: 'cleaningPasses', value: '???')
+    //TODO sendEvent(name: 'edgeClean', value '???')
+    //TODO sendEvent(name: 'alwaysFinish', value '???')
 
 
 
@@ -881,7 +885,10 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
 //TODO private local_performance
 
 //TODO private local_edgeClean_on
-//TODO private locaol_edgeClean_off
+//TODO private local_edgeClean_off
+
+//TODO private local_alwaysFinish_on
+//TODO private local_alwaysFinish_off
 
 private local_poll() {
 	local_get('/api/local/config/preferences', 'local_poll_cbk')
