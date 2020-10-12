@@ -30,10 +30,9 @@ def getRoombaStates() {
     return ROOMBA_STATES
 }
 metadata {
-    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", 
-    mnmn: "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner") {
+    definition (name: "Rumba", namespace: "mvevitsis", author: "Matvei Vevitsis", ocfDeviceType: "oic.d.robotcleaner") {
         capability "robotCleanerMovement"
-        //capability "robotCleanerCleaningMode"
+        capability "robotCleanerCleaningMode"
         capability "robotCleanerTurboMode"
         capability "Battery"
         capability "Switch"
@@ -195,7 +194,7 @@ def configure() {
 def initialize() {
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
-//sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
+sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
 sendEvent(name: 'robotCleanerTurboMode', value: 'off')
 }
 
@@ -277,10 +276,10 @@ def setRobotCleanerCleaningMode(mode){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
     }
-    if(mode == 'part'){
+    //if(mode == 'part'){
     //For debug only
-    sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
-    }
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
+    //}
     if(mode == 'repeat'){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
@@ -289,10 +288,10 @@ def setRobotCleanerCleaningMode(mode){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
     }
-    if(mode == 'stop'){
+    //if(mode == 'stop'){
     //For debug only
-    sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
-    }
+    //sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
+    //}
 }
                          
 //robotCleanerTurboMode methods
