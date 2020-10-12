@@ -35,10 +35,6 @@ metadata {
         capability "robotCleanerMovement"
         //capability "robotCleanerCleaningMode"
         capability "robotCleanerTurboMode"
-        //capability "circlefield05082.cleaningPasses"
-        //capability "circlefield05082.edgeClean"
-        //capability "circlefield05082.alwaysFinish"
-        //capability "circlefield05082.carpetBoost"
         capability "Battery"
         capability "Switch"
         capability "Refresh"
@@ -201,10 +197,6 @@ sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
 sendEvent(name: 'robotCleanerTurboMode', value: 'off')
-//sendEvent(name: 'cleaningPasses', value: 'auto')
-//sendEvent(name: 'carpetBoost', value: 'auto')
-//sendEvent(name: 'edgeClean', value: 'on')
-//sendEvent(name: 'alwaysFinish', value: 'off')
 }
 
 //Timed Session
