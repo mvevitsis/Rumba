@@ -36,54 +36,6 @@
         },
         {
             "component": "main",
-            "capability": "battery",
-            "version": 1,
-            "values": [],
-            "patch": [],
-            "visibleCondition": null
-        },
-        {
-            "component": "main",
-            "capability": "polling",
-            "version": 1,
-            "values": [],
-            "patch": [],
-            "visibleCondition": null
-        },
-        {
-            "component": "main",
-            "capability": "configuration",
-            "version": 1,
-            "values": [],
-            "patch": [],
-            "visibleCondition": null
-        },
-        {
-            "component": "main",
-            "capability": "refresh",
-            "version": 1,
-            "values": [],
-            "patch": [],
-            "visibleCondition": null
-        },
-        {
-            "component": "main",
-            "capability": "consumable",
-            "version": 1,
-            "values": [],
-            "patch": [],
-            "visibleCondition": null
-        },
-        {
-            "component": "main",
-            "capability": "timedSession",
-            "version": 1,
-            "values": [],
-            "patch": [],
-            "visibleCondition": null
-        },
-        {
-            "component": "main",
             "capability": "robotCleanerMovement",
             "version": 1,
             "values": [],
@@ -92,7 +44,7 @@
         },
         {
             "component": "main",
-            "capability": "robotCleanerTurboMode",
+            "capability": "circlefield05082.cleaningPasses",
             "version": 1,
             "values": [],
             "patch": [],
@@ -100,7 +52,7 @@
         },
         {
             "component": "main",
-            "capability": "circlefield05082.cleaningPasses",
+            "capability": "circlefield05082.carpetBoost",
             "version": 1,
             "values": [],
             "patch": [],
@@ -121,61 +73,30 @@
             "values": [],
             "patch": [],
             "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "battery",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
+        },
+        {
+            "component": "main",
+            "capability": "refresh",
+            "version": 1,
+            "values": [],
+            "patch": [],
+            "visibleCondition": null
         }
+      
     ],
     "automation": {
         "conditions": [
             {
                 "component": "main",
                 "capability": "switch",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "battery",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "polling",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "configuration",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "refresh",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "consumable",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "timedSession",
                 "version": 1,
                 "values": [],
                 "patch": [],
@@ -191,7 +112,7 @@
             },
             {
                 "component": "main",
-                "capability": "robotCleanerTurboMode",
+                "capability": "circlefield05082.cleaningPasses",
                 "version": 1,
                 "values": [],
                 "patch": [],
@@ -199,7 +120,7 @@
             },
             {
                 "component": "main",
-                "capability": "circlefield05082.cleaningPasses",
+                "capability": "circlefield05082.carpetBoost",
                 "version": 1,
                 "values": [],
                 "patch": [],
@@ -220,16 +141,6 @@
                 "values": [],
                 "patch": [],
                 "visibleCondition": null
-            }
-        ],
-        "actions": [
-            {
-                "component": "main",
-                "capability": "switch",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
             },
             {
                 "component": "main",
@@ -238,42 +149,13 @@
                 "values": [],
                 "patch": [],
                 "visibleCondition": null
-            },
+            }
+          
+        ],
+        "actions": [
             {
                 "component": "main",
-                "capability": "polling",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "configuration",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "refresh",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "consumable",
-                "version": 1,
-                "values": [],
-                "patch": [],
-                "visibleCondition": null
-            },
-            {
-                "component": "main",
-                "capability": "timedSession",
+                "capability": "switch",
                 "version": 1,
                 "values": [],
                 "patch": [],
@@ -289,7 +171,7 @@
             },
             {
                 "component": "main",
-                "capability": "robotCleanerTurboMode",
+                "capability": "circlefield05082.cleaningPasses",
                 "version": 1,
                 "values": [],
                 "patch": [],
@@ -297,7 +179,7 @@
             },
             {
                 "component": "main",
-                "capability": "circlefield05082.cleaningPasses",
+                "capability": "circlefield05082.carpetBoost",
                 "version": 1,
                 "values": [],
                 "patch": [],
@@ -321,7 +203,6 @@
             }
         ]
     },
-   
-    "vid": "38f445ff-5672-34f6-95e2-428f1e5e0682",
+    "vid": "5fdabb21-e708-336f-84c7-498114d46cff",
     "mnmn": "SmartThingsCommunity"
 }
