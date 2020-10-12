@@ -279,6 +279,7 @@ def sendMsg(message){
 //TODO
 // def setEdgeClean methods
 // def setCleaningPasses methods
+// def setCarpetBoost methods
 // def setAlwaysFinish methods
 
 
@@ -652,6 +653,7 @@ def setStatus(data) {
     sendEvent(name: "switch", value: state.switch)
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable)
+    //possible error
     sendEvent(name: 'robotCleanerMovement', value: robotCleanerMovement)
 
 
@@ -867,6 +869,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "switch", value: state.switch)
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable)    
+    //possible error 
     sendEvent(name: 'robotCleanerMovement', value: robotCleanerMovement)
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: '???')
     //TODO sendEvent(name: 'cleaningPasses', value: '???')
@@ -878,13 +881,13 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
  
 
 }
-//TODO private local_onepass
-//TODO private local_twopass
-//TODO private local_auto
+//TODO private local_cleaningPasses_one
+//TODO private local_cleaningPasses_two
+//TODO private local_cleaningPasses_auto
 
-//TODO private local_auto
-//TODO private local_eco
-//TODO private local_performance
+//TODO private local_carpetBoost_auto
+//TODO private local_carpetBoost_eco
+//TODO private local_carpetBoost_performance
 
 //TODO private local_edgeClean_on
 //TODO private local_edgeClean_off
