@@ -30,14 +30,15 @@ def getRoombaStates() {
     return ROOMBA_STATES
 }
 metadata {
-    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", "vid": "171a7899-0d26-39e3-a640-9a040755ea07",
-    "mnmn": "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner") {
+    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", vid: "a1498e67-fd7e-3680-b8ed-3fa76d23f280", 
+    mnmn: "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner") {
         capability "robotCleanerMovement"
         //capability "robotCleanerCleaningMode"
         capability "circlefield05082.cleaningPasses"
         capability "circlefield05082.edgeClean"
         capability "circlefield05082.alwaysFinish"
-        capability "robotCleanerTurboMode"
+        //capability "robotCleanerTurboMode"
+        capability "circlefield05082.carpetBoost"
         capability "Battery"
         capability "Switch"
         capability "Refresh"
@@ -199,7 +200,8 @@ def initialize() {
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 sendEvent(name: 'switch', value: 'off')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
-sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+//sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+sendEvent(name: 'carpetBoost', value: 'auto')
 sendEvent(name: 'cleaningPasses', value: 'auto')
 sendEvent(name: 'edgeClean', value: 'on')
 sendEvent(name: 'alwaysFinish', value: 'off')
