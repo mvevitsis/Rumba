@@ -802,7 +802,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     }
     
     //TODO def carpet_boost = get state from api
-    //TODO Set robotCleanerTurboMode state 
+    //TODO Set state.robotCleanerTurboMode
   
 
   
