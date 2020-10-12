@@ -30,15 +30,15 @@ def getRoombaStates() {
     return ROOMBA_STATES
 }
 metadata {
-    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", vid: "a1498e67-fd7e-3680-b8ed-3fa76d23f280", 
+    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", 
     mnmn: "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner") {
         capability "robotCleanerMovement"
         //capability "robotCleanerCleaningMode"
-        capability "circlefield05082.cleaningPasses"
-        capability "circlefield05082.edgeClean"
-        capability "circlefield05082.alwaysFinish"
-        //capability "robotCleanerTurboMode"
-        capability "circlefield05082.carpetBoost"
+        capability "robotCleanerTurboMode"
+        //capability "circlefield05082.cleaningPasses"
+        //capability "circlefield05082.edgeClean"
+        //capability "circlefield05082.alwaysFinish"
+        //capability "circlefield05082.carpetBoost"
         capability "Battery"
         capability "Switch"
         capability "Refresh"
@@ -84,7 +84,7 @@ preferences {
         input "roomba_password", "password", title: "Roomba password", displayDuringSetup: true
     }
     section("Misc.") {
-       	//input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
+       	input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "sendAudioMessage", "enum", title: "Audio Notifications", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "audioDevices", "capability.audioNotification", title: "Select a speaker", required: false, multiple: true
 		input type: "paragraph", title: "Polling Interval [minutes]", description: "This feature allows you to change the frequency of polling for the robot in minutes (1-59)"
@@ -197,14 +197,14 @@ def configure() {
 
 //Initialize capabilities for new app UI display
 def initialize() {
-sendEvent(name: 'robotCleanerMovement', value: 'idle')
 sendEvent(name: 'switch', value: 'off')
+sendEvent(name: 'robotCleanerMovement', value: 'idle')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
-//sendEvent(name: 'robotCleanerTurboMode', value: 'off')
-sendEvent(name: 'carpetBoost', value: 'auto')
-sendEvent(name: 'cleaningPasses', value: 'auto')
-sendEvent(name: 'edgeClean', value: 'on')
-sendEvent(name: 'alwaysFinish', value: 'off')
+sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+//sendEvent(name: 'cleaningPasses', value: 'auto')
+//sendEvent(name: 'carpetBoost', value: 'auto')
+//sendEvent(name: 'edgeClean', value: 'on')
+//sendEvent(name: 'alwaysFinish', value: 'off')
 }
 
 //Timed Session
@@ -276,11 +276,7 @@ def sendMsg(message){
     
 }
 
-//TODO
-// def setEdgeClean methods
-// def setCleaningPasses methods
-// def setCarpetBoost methods
-// def setAlwaysFinish methods
+
 
 
 //robotCleanerCleaningMode methods
@@ -653,8 +649,7 @@ def setStatus(data) {
     sendEvent(name: "switch", value: state.switch)
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable)
-    //possible error
-    sendEvent(name: 'robotCleanerMovement', value: robotCleanerMovement)
+    sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
 
 
     
@@ -784,10 +779,8 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     def num_cleaning_jobs = mission.nMssn
     def num_dirt_detected = data.bbrun.nScrubs
     def total_job_time = data.bbrun.hr
-    //TODO def cleaning_pass = ???
-    //TODO def carpet_boost = ???
-    //TODO def edge_clean = ???
-    //TODO def always_finish = ???
+    
+  
     
 
     def new_status = get_robot_status(current_phase, current_cycle, current_charge, readyCode)
@@ -808,13 +801,10 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
        state.robotCleanerMovement = "reserve"
     }
     
-    //TODO Set robotCleanerTurboMode state
-     
-    //TODO Set cleaningPasses state
-    
-    //TODO Set edgeClean state
-    
-    //TODO Set alwaysFinish state
+    //TODO def carpet_boost = get state from api
+    //TODO Set robotCleanerTurboMode state 
+  
+
   
     //Set the state object
     if(roomba_value == "cleaning") {
@@ -869,31 +859,20 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "switch", value: state.switch)
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable)    
-    //possible error 
-    sendEvent(name: 'robotCleanerMovement', value: robotCleanerMovement)
-    //TODO sendEvent(name: 'robotCleanerTurboMode', value: '???')
-    //TODO sendEvent(name: 'cleaningPasses', value: '???')
-    //TODO sendEvent(name: 'edgeClean', value '???')
-    //TODO sendEvent(name: 'alwaysFinish', value '???')
+    sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
+    //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
+    
+  
 
 
 
  
 
 }
-//TODO private local_cleaningPasses_one
-//TODO private local_cleaningPasses_two
-//TODO private local_cleaningPasses_auto
 
 //TODO private local_carpetBoost_auto
-//TODO private local_carpetBoost_eco
 //TODO private local_carpetBoost_performance
-
-//TODO private local_edgeClean_on
-//TODO private local_edgeClean_off
-
-//TODO private local_alwaysFinish_on
-//TODO private local_alwaysFinish_off
+//TODO private local_carpetBoost_eco
 
 private local_poll() {
 	local_get('/api/local/config/preferences', 'local_poll_cbk')
