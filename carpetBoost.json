@@ -1,0 +1,46 @@
+{
+    "id": "circlefield05082.carpetBoost",
+    "version": 1,
+    "name": "Carpet Boost",
+    "status": "proposed",
+    "attributes": {
+        "carpetBoost": {
+            "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "auto",
+                            "performance",
+                            "eco"
+
+                        ]
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            }
+        }
+    },
+    "commands": {
+        "setCarpetBoost": {
+            "arguments": [
+                {
+                    "name": "mode",
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "auto",
+                            "performance",
+                            "eco"
+                        ]
+                    },
+                    "required": true
+                }
+            ]
+        }
+    }
+}

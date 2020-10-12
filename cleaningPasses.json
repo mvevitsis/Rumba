@@ -1,0 +1,46 @@
+{
+    "id": "circlefield05082.cleaningPasses",
+    "version": 1,
+    "name": "Cleaning Passes",
+    "status": "proposed",
+    "attributes": {
+        "cleaningPasses": {
+            "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "auto",
+                            "one",
+                            "two",
+
+                        ]
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            }
+        }
+    },
+    "commands": {
+        "setCleaningPasses": {
+            "arguments": [
+                {
+                    "name": "mode",
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "auto",
+                            "one",
+                            "two"
+                        ]
+                    },
+                    "required": true
+                }
+            ]
+        }
+    }
+}
