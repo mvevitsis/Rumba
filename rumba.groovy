@@ -288,7 +288,7 @@ def setRobotCleanerCleaningMode(mode){
     }
     if(mode == 'manual'){
     //For debug only
-    sendEvent(name: 'robotCleanerCleaningMode', value: 'manual'
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
     //TODO Set cleaningPasses one
     }
     //if(mode == 'stop'){
