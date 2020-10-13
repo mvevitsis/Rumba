@@ -275,6 +275,7 @@ def setRobotCleanerCleaningMode(mode){
 	if(mode == 'auto'){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
+    //TODO Set cleaningPasses auto
     }
     //if(mode == 'part'){
     //For debug only
@@ -283,10 +284,12 @@ def setRobotCleanerCleaningMode(mode){
     if(mode == 'repeat'){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
+    //TODO Set cleaningPasses two
     }
     if(mode == 'manual'){
     //For debug only
-    sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'manual'
+    //TODO Set cleaningPasses one
     }
     //if(mode == 'stop'){
     //For debug only
@@ -794,6 +797,9 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     
     //TODO def carpet_boost = get state from api
     //TODO Set state.robotCleanerTurboMode
+	
+    //TODO def cleaning_passes = get state from api
+    //TODO Set state.robotCleanerCleaningMode
   
 
   
@@ -852,6 +858,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "consumable", value: state.consumable)    
     sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
+    //TODO sendEvent(name: 'robotCleanerCleaningMode', value: 'state.robotCleanerCleaningMode')
     
   
 
@@ -864,6 +871,10 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
 //TODO private local_carpetBoost_auto
 //TODO private local_carpetBoost_performance
 //TODO private local_carpetBoost_eco
+	  
+//TODO private local_cleaningPasses_auto
+//TODO private local_cleaningPasses_one
+//TODO private local_CleaningPasses_two
 
 private local_poll() {
 	local_get('/api/local/config/preferences', 'local_poll_cbk')
