@@ -32,8 +32,8 @@ def getRoombaStates() {
 metadata {
     definition (name: "Rumba", namespace: "mvevitsis", author: "Matvei Vevitsis", ocfDeviceType: "oic.d.robotcleaner") {
         capability "robotCleanerMovement"
-        capability "robotCleanerCleaningMode"
-        capability "robotCleanerTurboMode"
+        //capability "robotCleanerCleaningMode"
+        //capability "robotCleanerTurboMode"
         capability "Battery"
         capability "Switch"
         capability "Refresh"
@@ -194,8 +194,8 @@ def configure() {
 def initialize() {
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
-sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
-sendEvent(name: 'robotCleanerTurboMode', value: 'off')
+//sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
+//sendEvent(name: 'robotCleanerTurboMode', value: 'off')
 }
 
 //Timed Session
@@ -277,10 +277,10 @@ def setRobotCleanerCleaningMode(mode){
     sendEvent(name: 'robotCleanerCleaningMode', value: 'auto')
     //TODO Set cleaningPasses auto
     }
-    //if(mode == 'part'){
+    if(mode == 'part'){
     //For debug only
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
-    //}
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'part')
+    }
     if(mode == 'repeat'){
     //For debug only
     sendEvent(name: 'robotCleanerCleaningMode', value: 'repeat')
@@ -291,10 +291,10 @@ def setRobotCleanerCleaningMode(mode){
     sendEvent(name: 'robotCleanerCleaningMode', value: 'manual')
     //TODO Set cleaningPasses one
     }
-    //if(mode == 'stop'){
+    if(mode == 'stop'){
     //For debug only
-    //sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
-    //}
+    sendEvent(name: 'robotCleanerCleaningMode', value: 'stop')
+    }
 }
                          
 //robotCleanerTurboMode methods
@@ -924,4 +924,3 @@ private String convertPortToHex(port) {
     //log.debug hexport
     return hexport
 }
-
