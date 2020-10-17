@@ -41,6 +41,7 @@ metadata {
         capability "Consumable"
         capability "Timed Session"
         capability "Configuration"
+        capability "Health Check"
 
         command "dock"
         command "resume"
@@ -236,9 +237,7 @@ def checkConnection(){
     if (state.tryCount > 3) {
     	log.debug "Connection is offline"
         //Display offline in UI
-    	sendEvent(name: 'robotCleanerMovement', value: 'powerOff' )
-        //Add switch sendEvent here?
-        //Add healthcheck sendEvent here?
+    	sendEvent(name: 'healthStatus', value: 'offline' )
 	}
 
   	def command = getPingCommand()
@@ -254,7 +253,8 @@ def parseCheckConnection(description) {
     if (msg.status == 200) {
         state.tryCount = 0
         log.debug "Connection is online"
-    }
+        sendEvent(name: 'healthStatus', value: 'online' )
+	}
 }
 
 //TODO Setup the ping command 
