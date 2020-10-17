@@ -176,6 +176,8 @@ def updated() {
     //log.debug "Updated settings ${settings}..
     runIn(3, "updateDeviceNetworkID")
     schedule("0 0/${settings.pollInterval} * * * ?", poll)  // 4min polling is normal for irobots
+    //TODO Initialize tryCount
+    state.tryCount = 0
     //poll()
 }
 
@@ -225,6 +227,49 @@ def refresh() {
     //return poll
     return poll()
 }
+
+//TODO Check Roomba connection status
+def checkConnection(){
+	log.debug "Checking connection status..."
+    state.tryCount = state.tryCount + 1
+    log.debug "state.tryCount: ${state.tryCount}"
+    if (state.tryCount > 3) {
+    	log.debug "Connection is offline"
+        //Display offline in UI
+    	sendEvent(name: 'robotCleanerMovement', value: 'powerOff' )
+        //Add switch sendEvent here?
+        //Add healthcheck sendEvent here?
+	}
+
+  	def command = getPingCommand()
+    sendHubCommand(command)
+}
+//TODO Parse results of connection check
+def parseCheckConnection(description) {
+    log.debug "Parsing connection status results"
+    
+    def msg = parseLanMessage(description)
+    log.debug "Connection status: ${msg.status}"
+    
+    if (msg.status == 200) {
+        state.tryCount = 0
+        log.debug "Connection is online"
+    }
+}
+
+//TODO Setup the ping command 
+def getPingCommand() {
+    def result = new physicalgraph.device.HubAction(
+        method: "GET",
+        path: "/",
+        headers: [
+            HOST: getRobotAddress()
+        ]
+    )
+    
+    return result
+}
+
 //Polling
 def pollHistory() {
     log.debug "Polling for missionHistory ----"
@@ -233,6 +278,8 @@ def pollHistory() {
     return localAPI ? null : apiGet()
 }
 def poll() {
+	//TODO Check robot connection status at each polling interval
+    checkConnection()
     //Get historical data first
     pollHistory()
     //Then poll for current status
@@ -355,7 +402,7 @@ def setRobotCleanerMovement(mode){
     }
     if(mode == 'cleaning'){
     	//For debug only
-	    sendEvent(name: 'robotCleanerMovement', value: 'cleaning')
+        sendEvent(name: 'robotCleanerMovement', value: 'cleaning')
         return on()
     }
 }
@@ -401,7 +448,6 @@ def stop() {
 }
 def pauseAndDock() {
     sendEvent(name: "status", value: "pausing")
-    //sendEvent(name: 'robotCleanerMovement', value: 'homing')
 	state.RoombaCmd = "pause"
     return localAPI ? local_pauseAndDock() : apiGet()
 }
@@ -418,7 +464,6 @@ def cancel() {
 // Actions
 def dock() {
     sendEvent(name: "status", value: "docking")
-    //sendEvent(name: 'robotCleanerMovement', value: 'homing')
 	state.RoombaCmd = "dock"
     runIn(15, poll)
 	return localAPI ? local_dock() : apiGet()
@@ -587,7 +632,7 @@ def setStatus(data) {
     } else if (roomba_value == "error"){
        state.robotCleanerMovement = "alarm"
     } else if (roomba_value == "bin-full"){
-       state.robotCleanerMovement = "reserve"
+       state.robotCleanerMovement = "alarm"
     }
     
 	//Set the state object
@@ -760,6 +805,8 @@ void local_dummy_cbk(physicalgraph.device.HubResponse hubResponse) {
 }
 
 void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
+	//log.debug "hubResponse: ${hubResponse.class}"
+    //log.debug hubResponse.dump()
     def data = hubResponse.json
     def current_charge = data.batPct
     def robotName = data.name
@@ -792,7 +839,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     } else if (roomba_value == "error"){
        state.robotCleanerMovement = "alarm"
     } else if (roomba_value == "bin-full") {
-       state.robotCleanerMovement = "reserve"
+       state.robotCleanerMovement = "alarm"
     }
     
     //TODO def carpet_boost = get state from api
@@ -904,6 +951,11 @@ private local_pauseAndDock() {
 	local_get('/api/local/action/pause', 'local_dummy_cbk')
     pause(1000)
 	local_get('/api/local/action/dock', 'local_dummy_cbk')
+}
+
+//TODO Get the IP address and port of the robot (not server)
+private getRobotAddress(){
+	//TODO
 }
 
 def updateDeviceNetworkID() {
