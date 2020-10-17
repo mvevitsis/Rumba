@@ -41,7 +41,7 @@ metadata {
         capability "Consumable"
         capability "Timed Session"
         capability "Configuration"
-        capability "Health Check"
+        //capability "Health Check"
 
         command "dock"
         command "resume"
@@ -80,7 +80,7 @@ preferences {
         input "roomba_password", "password", title: "Roomba password", displayDuringSetup: true
     }
     section("Misc.") {
-       	input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
+       	//input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "sendAudioMessage", "enum", title: "Audio Notifications", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "audioDevices", "capability.audioNotification", title: "Select a speaker", required: false, multiple: true
 		input type: "paragraph", title: "Polling Interval [minutes]", description: "This feature allows you to change the frequency of polling for the robot in minutes (1-59)"
@@ -178,7 +178,7 @@ def updated() {
     runIn(3, "updateDeviceNetworkID")
     schedule("0 0/${settings.pollInterval} * * * ?", poll)  // 4min polling is normal for irobots
     //TODO Initialize tryCount
-    state.tryCount = 0
+    //state.tryCount = 0
     //poll()
 }
 
@@ -279,7 +279,7 @@ def pollHistory() {
 }
 def poll() {
 	//TODO Check robot connection status at each polling interval
-    checkConnection()
+    //checkConnection()
     //Get historical data first
     pollHistory()
     //Then poll for current status
