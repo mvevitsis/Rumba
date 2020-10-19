@@ -230,45 +230,45 @@ def refresh() {
 }
 
 //TODO Check Roomba connection status
-def checkConnection(){
-	log.debug "Checking connection status..."
-    state.tryCount = state.tryCount + 1
-    log.debug "state.tryCount: ${state.tryCount}"
-    if (state.tryCount > 3) {
-    	log.debug "Connection is offline"
+//def checkConnection(){
+	//log.debug "Checking connection status..."
+    //state.tryCount = state.tryCount + 1
+    //log.debug "state.tryCount: ${state.tryCount}"
+    //if (state.tryCount > 3) {
+    	//log.debug "Connection is offline"
         //Display offline in UI
-    	sendEvent(name: 'healthStatus', value: 'offline' )
-	}
+    	//sendEvent(name: 'healthStatus', value: 'offline' )
+	//}
 
-  	def command = getPingCommand()
-    sendHubCommand(command)
-}
+  	//def command = getPingCommand()
+    //sendHubCommand(command)
+//}
 //TODO Parse results of connection check
-def parseCheckConnection(description) {
-    log.debug "Parsing connection status results"
+//def parseCheckConnection(description) {
+    //log.debug "Parsing connection status results"
     
-    def msg = parseLanMessage(description)
-    log.debug "Connection status: ${msg.status}"
+    //def msg = parseLanMessage(description)
+    //log.debug "Connection status: ${msg.status}"
     
-    if (msg.status == 200) {
-        state.tryCount = 0
-        log.debug "Connection is online"
-        sendEvent(name: 'healthStatus', value: 'online' )
-	}
-}
+    //if (msg.status == 200) {
+        //state.tryCount = 0
+        //log.debug "Connection is online"
+        //sendEvent(name: 'healthStatus', value: 'online' )
+	//}
+//}
 
 //TODO Setup the ping command 
-def getPingCommand() {
-    def result = new physicalgraph.device.HubAction(
-        method: "GET",
-        path: "/",
-        headers: [
-            HOST: getRobotAddress()
-        ]
-    )
+//def getPingCommand() {
+    //def result = new physicalgraph.device.HubAction(
+        //method: "GET",
+        //path: "/",
+        //headers: [
+            //HOST: getRobotAddress()
+        //]
+    //)
     
-    return result
-}
+    //return result
+//}
 
 //Polling
 def pollHistory() {
@@ -291,6 +291,7 @@ def poll() {
 
 def sendMsg(message){
 	def msg = message
+    //Non functioning, removed from preferences
     if(sendPushMessage == "Yes") {
      	sendPush(msg)
   	}
