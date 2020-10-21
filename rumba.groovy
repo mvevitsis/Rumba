@@ -1,6 +1,10 @@
 /**
-*  Rumba v1.0
+*  Rumba v1.1
 *  for 900/i7/s9 series
+*  
+*  Version History:
+*   1.1: Implemented Health Check capability
+*   1.0: Initial release
 *
 *  Copyright 2020 Matvei Vevitsis
 *  Based on iRobot Roomba v2.2 by Steve-Gregory (Copyright 2016)
@@ -41,7 +45,7 @@ metadata {
         capability "Consumable"
         capability "Timed Session"
         capability "Configuration"
-        //capability "Health Check"
+        capability "Health Check"
 
         command "dock"
         command "resume"
@@ -185,6 +189,10 @@ def updated() {
 //Installed
 def installed() {
 	initialize()
+    //TODO debug
+    //Double the set polling interval, converted to seconds
+	sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
+    sendEvent(name: 'checkInterval', value: ${settings.pollInterval} * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
 }
 
 //Configuration
@@ -228,6 +236,14 @@ def refresh() {
     //return poll
     return poll()
 }
+
+//TODO debug
+//Ping
+def ping() {
+	log.debug "Device not responding, attempting to refresh..."
+	return refresh
+}
+
 
 //TODO Check Roomba connection status
 //def checkConnection(){
@@ -908,12 +924,6 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
     //TODO sendEvent(name: 'robotCleanerCleaningMode', value: 'state.robotCleanerCleaningMode')
     
-  
-
-
-
- 
-
 }
 
 //TODO private local_carpetBoost_auto
@@ -955,9 +965,9 @@ private local_pauseAndDock() {
 }
 
 //TODO Get the IP address and port of the robot (not server)
-private getRobotAddress(){
+//private getRobotAddress(){
 	//TODO
-}
+//}
 
 def updateDeviceNetworkID() {
 	log.debug "Executing 'updateDeviceNetworkID'"
