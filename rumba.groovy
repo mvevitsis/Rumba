@@ -45,7 +45,7 @@ metadata {
         capability "Consumable"
         capability "Timed Session"
         capability "Configuration"
-        capability "Health Check"
+        //capability "Health Check"
 
         command "dock"
         command "resume"
@@ -191,8 +191,8 @@ def installed() {
 	initialize()
     //TODO debug
     //Double the set polling interval, converted to seconds
-	sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
-    sendEvent(name: 'checkInterval', value: ${settings.pollInterval} * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
+	//sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
+    //sendEvent(name: 'checkInterval', value:, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
 }
 
 //Configuration
