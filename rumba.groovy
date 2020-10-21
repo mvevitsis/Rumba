@@ -192,7 +192,7 @@ def installed() {
     //TODO debug
     //Double the set polling interval, converted to seconds
 	//sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
-    //sendEvent(name: 'checkInterval', value:, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
+    //sendEvent(name: 'checkInterval', value: , displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
 }
 
 //Configuration
