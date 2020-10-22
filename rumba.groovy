@@ -1,9 +1,10 @@
 /**
-*  Rumba v1.1
+*  Rumba v1.3
 *  for 900/i7/s9 series
 *  
 *  Version History:
-*.  1.2 Fix for polling interval and health check, added method to get robot IP address
+*.  1.3 Removed unecessary sendEvents from poll() function
+*.  1.2 Attempted fix for polling interval and health check, added method to get robot IP address
 *   1.1: Implemented health check capability
 *   1.0: Initial release
 *
