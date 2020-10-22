@@ -295,7 +295,7 @@ def ping() {
 //Polling
 def pollHistory() {
     log.debug "Polling for missionHistory ----"
-    sendEvent(name: "headline", value: "Polling history API", displayed: false)
+    //sendEvent(name: "headline", value: "Polling history API", displayed: false)
     state.RoombaCmd = "missionHistory"
     return localAPI ? null : apiGet()
 }
@@ -306,7 +306,7 @@ def poll() {
     pollHistory()
     //Then poll for current status
     log.debug "Polling for status ----"
-    sendEvent(name: "headline", value: "Polling status API", displayed: false)
+    //sendEvent(name: "headline", value: "Polling status API", displayed: false)
     state.RoombaCmd = "getStatus"
 	return localAPI ? local_poll() : apiGet()
 }
