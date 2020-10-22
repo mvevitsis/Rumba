@@ -3,7 +3,8 @@
 *  for 900/i7/s9 series
 *  
 *  Version History:
-*   1.1: Implemented Health Check capability
+*.  1.2 Fix for polling interval and health check, added method to get robot IP address
+*   1.1: Implemented health check capability
 *   1.0: Initial release
 *
 *  Copyright 2020 Matvei Vevitsis
@@ -45,7 +46,7 @@ metadata {
         capability "Consumable"
         capability "Timed Session"
         capability "Configuration"
-        //capability "Health Check"
+        capability "Health Check"
 
         command "dock"
         command "resume"
@@ -57,6 +58,7 @@ metadata {
         attribute "totalJobHrs", "number"
         attribute "headline", "string"
         attribute "robotName", "string"
+        attribute "robotIpAddress", "string"
         attribute "preferences_set", "string"
         attribute "status", "string"
         //For ETA heuristic
@@ -87,7 +89,7 @@ preferences {
        	//input "sendPushMessage", "enum", title: "Push Notifications", description: "Alert if Roomba encounters a problem", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "sendAudioMessage", "enum", title: "Audio Notifications", options: ["Yes", "No"], defaultValue: "No", required: true
         //input "audioDevices", "capability.audioNotification", title: "Select a speaker", required: false, multiple: true
-		input type: "paragraph", title: "Polling Interval [minutes]", description: "This feature allows you to change the frequency of polling for the robot in minutes (1-59)"
+        input type: "paragraph", title: "Polling Interval [minutes]", description: "This feature allows you to change the frequency of polling for the robot in minutes (1-59)"
         input "pollInterval", "number", title: "Polling Interval", description: "Change polling frequency (in minutes)", defaultValue:4, range: "1..59", required: true, displayDuringSetup: true
     }
 }
@@ -179,8 +181,16 @@ tiles {
 //Settings updated
 def updated() {
     //log.debug "Updated settings ${settings}..
+    def interval 
+    if (settings.pollInterval){
+    	interval = settings.pollInterval
+    } else {
+    	interval = 4
+    }
     runIn(3, "updateDeviceNetworkID")
-    schedule("0 0/${settings.pollInterval} * * * ?", poll)  // 4min polling is normal for irobots
+    schedule("0 0/${interval} * * * ?", poll)  // 4min polling is normal for irobots
+    sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
+    sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
     //TODO Initialize tryCount
     //state.tryCount = 0
     //poll()
@@ -189,10 +199,6 @@ def updated() {
 //Installed
 def installed() {
 	initialize()
-    //TODO debug
-    //Double the set polling interval, converted to seconds
-	//sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
-    //sendEvent(name: 'checkInterval', value: , displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
 }
 
 //Configuration
@@ -923,7 +929,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
     //TODO sendEvent(name: 'robotCleanerCleaningMode', value: 'state.robotCleanerCleaningMode')
-    
+    sendEvent(name: "robotIpAddress", value: 'data.netinfo.addr')
 }
 
 //TODO private local_carpetBoost_auto
@@ -964,10 +970,10 @@ private local_pauseAndDock() {
 	local_get('/api/local/action/dock', 'local_dummy_cbk')
 }
 
-//TODO Get the IP address and port of the robot (not server)
-//private getRobotAddress(){
-	//TODO
-//}
+//Get the IP address of robot
+private getRobotAddress(){
+	return state.robotIpAddress
+}
 
 def updateDeviceNetworkID() {
 	log.debug "Executing 'updateDeviceNetworkID'"
