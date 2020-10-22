@@ -929,7 +929,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
     //TODO sendEvent(name: 'robotCleanerCleaningMode', value: 'state.robotCleanerCleaningMode')
-    sendEvent(name: "robotIpAddress", value: 'data.netinfo.addr')
+    //sendEvent(name: "robotIpAddress", value: 'data.netinfo.addr')
 }
 
 //TODO private local_carpetBoost_auto
