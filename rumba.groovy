@@ -194,7 +194,7 @@ def updated() {
     schedule("0 0/${interval} * * * ?", poll)  // 4min polling is normal for irobots
     //Health Tracking
     sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
-    sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
+    //sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
     //poll()
 }
 
@@ -246,10 +246,10 @@ def refresh() {
 }
 
 //Ping
-def ping() {
-	log.debug "Device not responding, attempting to refresh..."
-	return refresh
-}
+//def ping() {
+	//log.debug "Device not responding, attempting to refresh..."
+	//return refresh
+//}
 
 
 // pingを行うフロント関数
