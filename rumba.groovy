@@ -1,10 +1,11 @@
 /**
-*  Rumba v1.3
+*  Rumba v1.4
 *  for 900/i7/s9 series
 *  
 *  Version History:
-*.  1.3 Removed unecessary sendEvents from poll() function
-*.  1.2 Attempted fix for polling interval and health check, added method to get robot IP address
+*.  1.4: Completely rewrote health check using ping to robot and server IP
+*.  1.3: Removed unecessary sendEvents from poll() function
+*.  1.2: Attempted fix for polling interval and health check, added method to get robot IP address
 *   1.1: Implemented health check capability
 *   1.0: Initial release
 *
@@ -62,6 +63,7 @@ metadata {
         attribute "robotIpAddress", "string"
         attribute "preferences_set", "string"
         attribute "status", "string"
+        attribute "pingTimeoutStage", "number"
         //For ETA heuristic
         attribute "lastSqft", "number"
         attribute "lastRuntime", "number"
@@ -190,10 +192,9 @@ def updated() {
     }
     runIn(3, "updateDeviceNetworkID")
     schedule("0 0/${interval} * * * ?", poll)  // 4min polling is normal for irobots
+    //Health Tracking
     sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
     sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
-    //TODO Initialize tryCount
-    //state.tryCount = 0
     //poll()
 }
 
@@ -244,7 +245,6 @@ def refresh() {
     return poll()
 }
 
-//TODO debug
 //Ping
 def ping() {
 	log.debug "Device not responding, attempting to refresh..."
@@ -252,46 +252,66 @@ def ping() {
 }
 
 
-//TODO Check Roomba connection status
-//def checkConnection(){
-	//log.debug "Checking connection status..."
-    //state.tryCount = state.tryCount + 1
-    //log.debug "state.tryCount: ${state.tryCount}"
-    //if (state.tryCount > 3) {
-    	//log.debug "Connection is offline"
-        //Display offline in UI
-    	//sendEvent(name: 'healthStatus', value: 'offline' )
-	//}
+// pingを行うフロント関数
+def getPingCommand() {
+    // 結局ホストは生きているのかフラグ
+    def pingState = false;
+    // Rest980のステージ
+    state.pingTimeoutStage = 1
+    rest980Ping()
+    if (state.pingTimeoutStage != -1) {
+        // pingTimeout でセットされた失敗の値以外ならRoombaにPingする
+        state.pingTimeoutStage = 2
+        roombaPing()
+        // pingTimeout でセットされた失敗の値以外ならping成功とする
+        if (state.pingTimeoutStage != -2) {
+            pingState = true
+        }
+    }
+    return state
+}
 
-  	//def command = getPingCommand()
-    //sendHubCommand(command)
-//}
-//TODO Parse results of connection check
-//def parseCheckConnection(description) {
-    //log.debug "Parsing connection status results"
-    
-    //def msg = parseLanMessage(description)
-    //log.debug "Connection status: ${msg.status}"
-    
-    //if (msg.status == 200) {
-        //state.tryCount = 0
-        //log.debug "Connection is online"
-        //sendEvent(name: 'healthStatus', value: 'online' )
-	//}
-//}
+// ルンバにpingする
+// 雰囲気はここを参照
+// https://github.com/c99koder/SmartThings/blob/master/smartapps/c99koder/computer-power-control.src/computer-power-control.groovy
+def roombaPing() {
+    unschedule(pingTimeout)
+    runIn(30, pingTimeout)
+    def result = new physicalgraph.device.HubAction(
+        method: "GET",
+        path: "/",
+        headers: [
+            HOST: getRobotAddress()
+        ]
+    )
+}
 
-//TODO Setup the ping command 
-//def getPingCommand() {
-    //def result = new physicalgraph.device.HubAction(
-        //method: "GET",
-        //path: "/",
-        //headers: [
-            //HOST: getRobotAddress()
-        //]
-    //)
-    
-    //return result
-//}
+// rest980にpingする
+def rest980Ping() {
+    unschedule(pingTimeout)
+    runIn(30, pingTimeout)
+    def result = new physicalgraph.device.HubAction(
+        method: "GET",
+        path: "/",
+        headers: [
+            HOST: $roomba_host
+        ]
+    )
+}
+
+// pingのタイムアウト時の処理
+def pingTimeout() {
+    // roomba タイムアウト
+    if (state.pingTimeoutStage == 1) {
+        log.debug "rest980 timeout"
+        state.pingTimeoutStage = -1
+    }
+    // roomba タイムアウト
+    if (state.pingTimeoutStaget == 2) {
+        log.debug "roomba timeout"
+        state.pingTimeoutStage = -2
+    }
+}
 
 //Polling
 def pollHistory() {
@@ -301,15 +321,24 @@ def pollHistory() {
     return localAPI ? null : apiGet()
 }
 def poll() {
-	//TODO Check robot connection status at each polling interval
-    //checkConnection()
-    //Get historical data first
-    pollHistory()
-    //Then poll for current status
-    log.debug "Polling for status ----"
-    //sendEvent(name: "headline", value: "Polling status API", displayed: false)
-    state.RoombaCmd = "getStatus"
-	return localAPI ? local_poll() : apiGet()
+	//Check robot and server connection status at each polling interval
+    getPingCommand()
+    if(pingState == true){ 
+    	//Mark device as online in ST app
+    	sendEvent(name: 'healthStatus', value: 'online' )
+    	log.debug "Marked device as online"
+		//Get historical data 
+    	pollHistory()
+    	//Then poll for current status
+    	log.debug "Polling for status ----"
+    	//sendEvent(name: "headline", value: "Polling status API", displayed: false)
+    	state.RoombaCmd = "getStatus"
+		return localAPI ? local_poll() : apiGet()
+    } else {
+    //Mark device as offline 
+    	sendEvent(name: 'healthStatus', value: 'offline' )
+    	log.debug "Marked device as offline"
+    }
 }
 
 def sendMsg(message){
@@ -926,11 +955,11 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "status", value: roomba_value)
     sendEvent(name: "switch", value: state.switch)
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
-    sendEvent(name: "consumable", value: state.consumable)    
-    sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
+    sendEvent(name: "consumable", value: state.consumable) 
+    sendEvent(name: "robotIpAddress", value: 'data.netinfo.addr')
+	sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
     //TODO sendEvent(name: 'robotCleanerCleaningMode', value: 'state.robotCleanerCleaningMode')
-    //sendEvent(name: "robotIpAddress", value: 'data.netinfo.addr')
 }
 
 //TODO private local_carpetBoost_auto
@@ -971,9 +1000,10 @@ private local_pauseAndDock() {
 	local_get('/api/local/action/dock', 'local_dummy_cbk')
 }
 
-//Get the IP address of robot
+//Get the IP address of robot in hex
 private getRobotAddress(){
-	return state.robotIpAddress
+	def robothex = convertIPtoHex(state.robotIpAddress).toUpperCase()
+	return robothex
 }
 
 def updateDeviceNetworkID() {
