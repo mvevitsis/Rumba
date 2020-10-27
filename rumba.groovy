@@ -194,7 +194,7 @@ def updated() {
     schedule("0 0/${interval} * * * ?", poll)  // 4min polling is normal for irobots
     //Health Tracking
     sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
-    //sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
+    sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
     //poll()
 }
 
@@ -211,6 +211,7 @@ def configure() {
 
 //Initialize capabilities for new app UI display
 def initialize() {
+state.robotIpAddress = '0.0.0.0'
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
@@ -246,10 +247,10 @@ def refresh() {
 }
 
 //Ping
-//def ping() {
-	//log.debug "Device not responding, attempting to refresh..."
-	//return refresh
-//}
+def ping() {
+	log.debug "Device not responding, attempting to refresh..."
+	return refresh
+}
 
 
 // pingを行うフロント関数
@@ -262,10 +263,15 @@ def getPingCommand() {
     if (state.pingTimeoutStage != -1) {
         // pingTimeout でセットされた失敗の値以外ならRoombaにPingする
         state.pingTimeoutStage = 2
-        roombaPing()
-        // pingTimeout でセットされた失敗の値以外ならping成功とする
-        if (state.pingTimeoutStage != -2) {
-            pingState = true
+        if (state.robotIpAddress == '0.0.0.0') {
+            // init state, roomba check skip.
+            pingState = true;
+        } else {
+            roombaPing()
+            // pingTimeout でセットされた失敗の値以外ならping成功とする
+            if (state.pingTimeoutStage != -2) {
+                pingState = true
+            }
         }
     }
     return state
@@ -956,7 +962,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "switch", value: state.switch)
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable) 
-    sendEvent(name: "robotIpAddress", value: 'data.netinfo.addr')
+    sendEvent(name: "robotIpAddress", value: data.netinfo.addr)
 	sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
     //TODO sendEvent(name: 'robotCleanerCleaningMode', value: 'state.robotCleanerCleaningMode')
