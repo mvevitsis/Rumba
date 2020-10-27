@@ -193,8 +193,8 @@ def updated() {
     runIn(3, "updateDeviceNetworkID")
     schedule("0 0/${interval} * * * ?", poll)  // 4min polling is normal for irobots
     //Health Tracking
-    sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
-    sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
+    //sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
+    //sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
     //poll()
 }
 
@@ -247,16 +247,16 @@ def refresh() {
 }
 
 //Ping
-def ping() {
-	log.debug "Device not responding, attempting to refresh..."
-	return refresh
-}
+//def ping() {
+	//log.debug "Device not responding, attempting to refresh..."
+	//return refresh
+//}
 
 
 // pingを行うフロント関数
 def getPingCommand() {
     // 結局ホストは生きているのかフラグ
-    def pingState = false;
+    def pingState = false
     // Rest980のステージ
     state.pingTimeoutStage = 1
     rest980Ping()
@@ -265,7 +265,7 @@ def getPingCommand() {
         state.pingTimeoutStage = 2
         if (state.robotIpAddress == '0.0.0.0') {
             // init state, roomba check skip.
-            pingState = true;
+            pingState = true
         } else {
             roombaPing()
             // pingTimeout でセットされた失敗の値以外ならping成功とする
@@ -328,11 +328,11 @@ def pollHistory() {
 }
 def poll() {
 	//Check robot and server connection status at each polling interval
-    getPingCommand()
-    if(pingState == true){ 
+    //getPingCommand()
+    //if(pingState == true){ 
     	//Mark device as online in ST app
-    	sendEvent(name: 'healthStatus', value: 'online' )
-    	log.debug "Marked device as online"
+    	//sendEvent(name: 'healthStatus', value: 'online' )
+    	//log.debug "Marked device as online"
 		//Get historical data 
     	pollHistory()
     	//Then poll for current status
@@ -340,11 +340,11 @@ def poll() {
     	//sendEvent(name: "headline", value: "Polling status API", displayed: false)
     	state.RoombaCmd = "getStatus"
 		return localAPI ? local_poll() : apiGet()
-    } else {
+    //} else {
     //Mark device as offline 
-    	sendEvent(name: 'healthStatus', value: 'offline' )
-    	log.debug "Marked device as offline"
-    }
+    	//sendEvent(name: 'healthStatus', value: 'offline' )
+    	//log.debug "Marked device as offline"
+    //}
 }
 
 def sendMsg(message){
