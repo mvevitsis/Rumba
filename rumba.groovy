@@ -192,9 +192,6 @@ def updated() {
     }
     runIn(3, "updateDeviceNetworkID")
     schedule("0 0/${interval} * * * ?", poll)  // 4min polling is normal for irobots
-    //Health Tracking
-    //sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
-    //sendEvent(name: 'checkInterval', value: interval * 60 * 2, displayed: false, data: [ protocol: 'cloud', hubHardwareId: device.hub.hardwareID ] )
     //poll()
 }
 
@@ -212,6 +209,7 @@ def configure() {
 //Initialize capabilities for new app UI display
 def initialize() {
 state.robotIpAddress = '0.0.0.0'
+sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
@@ -246,13 +244,6 @@ def refresh() {
     return poll()
 }
 
-//Ping
-//def ping() {
-	//log.debug "Device not responding, attempting to refresh..."
-	//return refresh
-//}
-
-
 // pingを行うフロント関数
 def getPingCommand() {
     // 結局ホストは生きているのかフラグ
@@ -274,6 +265,7 @@ def getPingCommand() {
             }
         }
     }
+    //mistake?
     return state
 }
 
@@ -331,7 +323,7 @@ def poll() {
     //getPingCommand()
     //if(pingState == true){ 
     	//Mark device as online in ST app
-    	//sendEvent(name: 'healthStatus', value: 'online' )
+        //sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
     	//log.debug "Marked device as online"
 		//Get historical data 
     	pollHistory()
@@ -341,8 +333,8 @@ def poll() {
     	state.RoombaCmd = "getStatus"
 		return localAPI ? local_poll() : apiGet()
     //} else {
-    //Mark device as offline 
-    	//sendEvent(name: 'healthStatus', value: 'offline' )
+        //Mark device as offline 
+        //sendEvent(name: "DeviceWatch-DeviceStatus", value: "offline")
     	//log.debug "Marked device as offline"
     //}
 }
@@ -436,7 +428,7 @@ def setRobotCleanerMovement(mode){
     }
     if(mode == 'charging'){
     	//For debug only
-    	sendEvent(name: 'robotCleanerMovement', value: 'charging' )
+		sendEvent(name: 'robotCleanerMovement', value: 'charging' )
         return off()
     }
     if(mode == 'alarm'){
