@@ -1,12 +1,9 @@
 /**
-*  Rumba v1.4
+*  Rumba v1.5
 *  for 900/i7/s9 series
 *  
 *  Version History:
-*.  1.4: Completely rewrote health check using ping to robot and server IP
-*.  1.3: Removed unecessary sendEvents from poll() function
-*.  1.2: Attempted fix for polling interval and health check, added method to get robot IP address
-*   1.1: Implemented health check capability
+*   1.5: Implemented device health check, tweaked state logic. 
 *   1.0: Initial release
 *
 *  Copyright 2020 Matvei Vevitsis
@@ -210,6 +207,8 @@ def configure() {
 def initialize() {
 state.robotIpAddress = '0.0.0.0'
 sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
+//sendEvent(name: "healthStatus", value: "online")
+sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
@@ -428,7 +427,7 @@ def setRobotCleanerMovement(mode){
     }
     if(mode == 'charging'){
     	//For debug only
-		sendEvent(name: 'robotCleanerMovement', value: 'charging' )
+		//sendEvent(name: 'robotCleanerMovement', value: 'charging' )
         return off()
     }
     if(mode == 'alarm'){
@@ -453,7 +452,7 @@ def setRobotCleanerMovement(mode){
     }
     if(mode == 'cleaning'){
     	//For debug only
-        sendEvent(name: 'robotCleanerMovement', value: 'cleaning')
+        //sendEvent(name: 'robotCleanerMovement', value: 'cleaning')
         return on()
     }
 }
@@ -465,7 +464,8 @@ def on() {
     log.debug "On based on state - ${status}"
     //For debug only
     sendEvent(name: 'switch', value: 'on') 
-    //if(status == "paused")
+    sendEvent(name: 'robotCleanerMovement', value: 'cleaning')
+	//if(status == "paused")
 	if(status == "pausing") {
 	    return resume()
     } else {
@@ -478,6 +478,7 @@ def off() {
     log.debug "Off based on state - ${status}"
     //For debug only
     sendEvent(name: 'switch', value: 'off') 
+    sendEvent(name: 'robotCleanerMovement', value: 'homing')
 	if(status == "paused") {
     	return dock()
     } else {
@@ -850,6 +851,12 @@ private local_get(path, cbk) {
     def host = "$roomba_host:$roomba_port"
 
 	sendHubCommand(new physicalgraph.device.HubAction("""GET $path HTTP/1.1\r\nHOST: $host\r\n\r\n""", physicalgraph.device.Protocol.LAN, null, [callback: cbk])) 
+    if(hubResponse == null) {
+		state.connection = "offline"
+    } else {
+        state.connection = "online"
+    }
+    sendEvent(name: "DeviceWatch-DeviceStatus", value: state.connection)
 }
 
 void local_dummy_cbk(physicalgraph.device.HubResponse hubResponse) {
@@ -956,8 +963,8 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "consumable", value: state.consumable) 
     sendEvent(name: "robotIpAddress", value: data.netinfo.addr)
 	sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
-    //TODO sendEvent(name: 'robotCleanerTurboMode', value: 'state.robotCleanerTurboMode')
-    //TODO sendEvent(name: 'robotCleanerCleaningMode', value: 'state.robotCleanerCleaningMode')
+    //TODO sendEvent(name: 'robotCleanerTurboMode', value: state.robotCleanerTurboMode)
+    //TODO sendEvent(name: 'robotCleanerCleaningMode', value: state.robotCleanerCleaningMode)
 }
 
 //TODO private local_carpetBoost_auto
