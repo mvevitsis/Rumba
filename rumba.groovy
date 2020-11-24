@@ -45,7 +45,7 @@ metadata {
         capability "Consumable"
         capability "Timed Session"
         capability "Configuration"
-        capability "Health Check"
+        //capability "Health Check"
 
         command "dock"
         command "resume"
@@ -206,9 +206,9 @@ def configure() {
 //Initialize capabilities for new app UI display
 def initialize() {
 state.robotIpAddress = '0.0.0.0'
-sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
+//sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
 //sendEvent(name: "healthStatus", value: "online")
-sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
+//sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
@@ -851,12 +851,12 @@ private local_get(path, cbk) {
     def host = "$roomba_host:$roomba_port"
 
 	sendHubCommand(new physicalgraph.device.HubAction("""GET $path HTTP/1.1\r\nHOST: $host\r\n\r\n""", physicalgraph.device.Protocol.LAN, null, [callback: cbk])) 
-    if(hubResponse == null) {
-		state.connection = "offline"
-    } else {
-        state.connection = "online"
-    }
-    sendEvent(name: "DeviceWatch-DeviceStatus", value: state.connection)
+    //if(hubResponse == null) {
+		//state.connection = "offline"
+    //} else {
+        //state.connection = "online"
+    //}
+    //sendEvent(name: "DeviceWatch-DeviceStatus", value: state.connection)
 }
 
 void local_dummy_cbk(physicalgraph.device.HubResponse hubResponse) {
