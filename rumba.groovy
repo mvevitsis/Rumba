@@ -1,12 +1,13 @@
 /**
-*  Rumba v1.5
+*  Rumba v1.6
 *  for 900/i7/s9 series
 *  
 *  Version History:
-*   1.5: Implemented device health check, tweaked state logic. 
+*   1.6: Implemented device health check (properly this time?), tweaked state logic. 
 *   1.0: Initial release
 *
 *  Copyright 2020 Matvei Vevitsis
+*  with additional contributions from Jon Fields
 *  Based on iRobot Roomba v2.2 by Steve-Gregory (Copyright 2016)
 *  with additional modifications by Adrian Caramaliu and Justin Dybedahl
 *
@@ -45,7 +46,7 @@ metadata {
         capability "Consumable"
         capability "Timed Session"
         capability "Configuration"
-        //capability "Health Check"
+        capability "Health Check"
 
         command "dock"
         command "resume"
@@ -206,9 +207,9 @@ def configure() {
 //Initialize capabilities for new app UI display
 def initialize() {
 state.robotIpAddress = '0.0.0.0'
-//sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
+sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
 //sendEvent(name: "healthStatus", value: "online")
-//sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
+sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
@@ -865,6 +866,11 @@ void local_dummy_cbk(physicalgraph.device.HubResponse hubResponse) {
 void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
 	//log.debug "hubResponse: ${hubResponse.class}"
     //log.debug hubResponse.dump()
+     def status = hubResponse.status
+     //log.debug "http status: ${status}"
+     if(status == 200){
+    	connected()
+        }
     def data = hubResponse.json
     def current_charge = data.batPct
     def robotName = data.name
@@ -977,6 +983,24 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
 
 private local_poll() {
 	local_get('/api/local/config/preferences', 'local_poll_cbk')
+    runIn(30,timeout)
+}
+
+def connected() {
+	log.debug "Server is Online"
+	sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
+    state.timeout = 0
+    unschedule(timeout)
+}
+
+def timeout() {
+	if (state.timeout == 1){
+    	log.error "Check server, not responding - Second Attempt"
+    	sendEvent(name: "DeviceWatch-DeviceStatus", value: "offline")
+        } else if (state.timeout == 0) {
+    		log.error "Check server, not responding - First Attempt"
+            state.timeout = 1
+            }
 }
 
 private local_start() {
