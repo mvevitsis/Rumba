@@ -35,7 +35,7 @@ def getRoombaStates() {
     return ROOMBA_STATES
 }
 metadata {
-    definition (name: "Rumba", namespace: "mvevitsis", author: "Matvei Vevitsis", ocfDeviceType: "oic.d.robotcleaner") {
+    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", mnmn: "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner", vid: "2bef2a0f-23cd-3131-a40f-b62c4473d89f") {
         capability "robotCleanerMovement"
         //capability "robotCleanerCleaningMode"
         //capability "robotCleanerTurboMode"
@@ -47,7 +47,8 @@ metadata {
         capability "Timed Session"
         capability "Configuration"
         capability "Health Check"
-
+        capability "circlefield05082.binstatus"
+        
         command "dock"
         command "resume"
         command "pause"
@@ -193,6 +194,12 @@ def updated() {
     //poll()
 }
 
+//Define custom capabilities
+def setBinStatus(currentStatus){
+	sendEvent(name: 'binStatus', value: currentStatus)
+}
+
+
 //Installed
 def installed() {
 	initialize()
@@ -203,7 +210,7 @@ def configure() {
    log.debug "Configuring.."
    poll()
 }
-
+    
 //Initialize capabilities for new app UI display
 def initialize() {
 state.robotIpAddress = '0.0.0.0'
@@ -212,6 +219,7 @@ sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
 sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
+sendEvent(name: 'binStatus', value: 'normal')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
 //sendEvent(name: 'robotCleanerTurboMode', value: 'off')
 }
