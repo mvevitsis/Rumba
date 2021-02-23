@@ -1,8 +1,9 @@
 /**
-*  Rumba v1.6
+*  Rumba v1.7
 *  for 900/i7/s9 series
 *  
 *  Version History:
+*   1.7: Implemented separate bin status capability to help distinguish from other errors
 *   1.6: Implemented device health check (properly this time?), tweaked state logic. 
 *   1.0: Initial release
 *
@@ -35,7 +36,7 @@ def getRoombaStates() {
     return ROOMBA_STATES
 }
 metadata {
-    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", mnmn: "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner", vid: "2bef2a0f-23cd-3131-a40f-b62c4473d89f") {
+    definition (name: "Rumba", namespace: "circlefield05082", author: "Matvei Vevitsis", mnmn: "SmartThingsCommunity", ocfDeviceType: "oic.d.robotcleaner", vid: "2a2f2f85-a021-3da2-9f27-68af294851e5") {
         capability "robotCleanerMovement"
         //capability "robotCleanerCleaningMode"
         //capability "robotCleanerTurboMode"
@@ -47,7 +48,7 @@ metadata {
         capability "Timed Session"
         capability "Configuration"
         capability "Health Check"
-        capability "circlefield05082.binstatus"
+        capability "circlefield05082.newbinstatus"
         
         command "dock"
         command "resume"
@@ -195,10 +196,9 @@ def updated() {
 }
 
 //Define custom capabilities
-def setBinStatus(currentStatus){
-	sendEvent(name: 'binStatus', value: currentStatus)
+def setNewBinStatus(arg){
+	sendEvent(name: 'newBinStatus', value: arg)
 }
-
 
 //Installed
 def installed() {
@@ -219,7 +219,7 @@ sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
 sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
 sendEvent(name: 'switch', value: 'off')
 sendEvent(name: 'robotCleanerMovement', value: 'idle')
-sendEvent(name: 'binStatus', value: 'normal')
+sendEvent(name: 'newBinStatus', value: 'normal')
 //sendEvent(name: 'robotCleanerCleaningMode', value: 'auto') 
 //sendEvent(name: 'robotCleanerTurboMode', value: 'off')
 }
@@ -692,8 +692,8 @@ def setStatus(data) {
 	   state.robotCleanerMovement = "homing"
     } else if (roomba_value == "error"){
        state.robotCleanerMovement = "alarm"
-    } else if (roomba_value == "bin-full"){
-       state.robotCleanerMovement = "alarm"
+    //} else if (roomba_value == "bin-full"){
+       //state.robotCleanerMovement = "alarm"
     }
     
 	//Set the state object
@@ -706,10 +706,12 @@ def setStatus(data) {
     /* Consumable state-changes */
     if(roomba_value == "bin-full") {
         state.consumable = "maintenance_required"
+        state.newBinStatus = "full"
     } else if(roomba_value == "error"){
         state.consumable = "missing"
     } else {
         state.consumable = "good"
+        state.newBinStatus = "normal"
     }
 
     /* Timed Session state-changes */
@@ -750,6 +752,7 @@ def setStatus(data) {
     sendEvent(name: "sessionStatus", value: state.sessionStatus)
     sendEvent(name: "consumable", value: state.consumable)
     sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
+    sendEvent(name: 'newBinStatus', value: state.newBinStatus)
 
 
     
@@ -910,8 +913,8 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
 	   state.robotCleanerMovement = "homing"
     } else if (roomba_value == "error"){
        state.robotCleanerMovement = "alarm"
-    } else if (roomba_value == "bin-full") {
-       state.robotCleanerMovement = "alarm"
+    //} else if (roomba_value == "bin-full") {
+       //state.robotCleanerMovement = "alarm"
     }
     
     //TODO def carpet_boost = get state from api
@@ -932,10 +935,12 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     /* Consumable state-changes */
     if(roomba_value == "bin-full") {
         state.consumable = "maintenance_required"
+        state.newBinStatus = "full"
     } else if(roomba_value == "error"){
         state.consumable = "missing"
     } else {
         state.consumable = "good"
+        state.newBinStatus = "normal"
     }
 
     /* Timed Session state-changes */
@@ -977,6 +982,7 @@ void local_poll_cbk(physicalgraph.device.HubResponse hubResponse) {
     sendEvent(name: "consumable", value: state.consumable) 
     sendEvent(name: "robotIpAddress", value: data.netinfo.addr)
 	sendEvent(name: 'robotCleanerMovement', value: state.robotCleanerMovement)
+    sendEvent(name: 'newBinStatus', value: state.newBinStatus)
     //TODO sendEvent(name: 'robotCleanerTurboMode', value: state.robotCleanerTurboMode)
     //TODO sendEvent(name: 'robotCleanerCleaningMode', value: state.robotCleanerCleaningMode)
 }
