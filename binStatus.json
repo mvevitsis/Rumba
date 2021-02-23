@@ -1,0 +1,64 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{binStatus.value}}",
+                "alternatives": [
+                    {
+                        "key": "full",
+                        "value": "Full"
+                    },
+                    {
+                        "key": "normal",
+                        "value": "Normal"
+                    }
+                ]
+            }
+        ],
+        "actions": [],
+        "basicPlus": []
+    },
+    "detailView": [
+        {
+            "label": "Bin status",
+            "displayType": "state",
+            "state": {
+                "label": "{{binStatus.value}}",
+                "alternatives": [
+                    {
+                        "key": "full",
+                        "value": "Full"
+                    },
+                    {
+                        "key": "normal",
+                        "value": "Normal"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "Bin status",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "full",
+                            "value": "Full"
+                        },
+                        {
+                            "key": "normal",
+                            "value": "Normal"
+                        }
+                    ],
+                    "value": "binStatus.value"
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "circlefield05082.binstatus",
+    "version": 1
+}
