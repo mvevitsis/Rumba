@@ -7,7 +7,7 @@
 *   1.6: Implemented device health check (properly this time?), tweaked state logic. 
 *   1.0: Initial release
 *
-*  Copyright 2020 Matvei Vevitsis
+*  Copyright 2021 Matvei Vevitsis
 *  with additional contributions from Jon Fields
 *  Based on iRobot Roomba v2.2 by Steve-Gregory (Copyright 2016)
 *  with additional modifications by Adrian Caramaliu and Justin Dybedahl
@@ -1039,7 +1039,7 @@ private local_dock() {
 
 private local_pauseAndDock() {
 	local_get('/api/local/action/pause', 'local_dummy_cbk')
-    pause(1000)
+    pause()
 	local_get('/api/local/action/dock', 'local_dummy_cbk')
 }
 
